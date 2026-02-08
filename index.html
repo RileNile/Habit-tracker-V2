@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Follow-Through">
+  <meta name="theme-color" content="#667eea">
+  <title>2026: Year of Follow-Through</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 10px;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+      max-width: 400px;
+    }
+
+    .login-card h1 {
+      color: #2d3748;
+      margin-bottom: 10px;
+      font-size: 2em;
+    }
+
+    .login-card p {
+      color: #718096;
+      margin-bottom: 30px;
+    }
+
+    .google-btn {
+      background: white;
+      border: 2px solid #e2e8f0;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s;
+      width: 100%;
+    }
+
+    .google-btn:hover {
+      border-color: #667eea;
+      background: #f7fafc;
+    }
+
+    .app-content {
+      display: none;
+    }
+
+    .app-content.active {
+      display: block;
+    }
+    
+    .header {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    .logout-btn {
+      background: #f56565;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+
+    .quote-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-style: italic;
+      font-size: 1.1em;
+      line-height: 1.6;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .quote-box .quote-text {
+      margin-bottom: 5px;
+    }
+
+    .quote-box .quote-author {
+      font-size: 0.8em;
+      opacity: 0.9;
+    }
+    
+    h1 {
+      color: #2d3748;
+      font-size: 1.5em;
+      margin-bottom: 5px;
+    }
+    
+    .subtitle {
+      color: #718096;
+      font-size: 0.9em;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 15px;
+      border-radius: 10px;
+      color: white;
+      text-align: center;
+    }
+    
+    .stat-card h3 {
+      font-size: 0.75em;
+      opacity: 0.9;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .stat-card .value {
+      font-size: 2em;
+      font-weight: bold;
+    }
+
+    .tabs {
+      background: white;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      padding: 10px;
+      display: flex;
+      gap: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: #f7fafc;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #718096;
+      transition: all 0.3s;
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+    
+    .week-nav {
+      background: white;
+      padding: 15px;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .week-nav button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85em;
+      transition: background 0.3s;
+      touch-action: manipulation;
+    }
+    
+    .week-nav button:active {
+      background: #5568d3;
+      transform: scale(0.95);
+    }
+    
+    .week-info {
+      text-align: center;
+      font-weight: 600;
+      color: #2d3748;
+      font-size: 0.9em;
+    }
+    
+    .category {
+      background: white;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .category-header {
+      background: linear-gradient(90deg, #f7fafc 0%, #edf2f7 100%);
+      padding: 15px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #e2e8f0;
+      touch-action: manipulation;
+    }
+    
+    .category-header:active {
+      background: linear-gradient(90deg, #edf2f7 0%, #e2e8f0 100%);
+    }
+    
+    .category-title {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #2d3748;
+    }
+    
+    .category-score {
+      font-size: 1em;
+      font-weight: bold;
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+    
+    .score-high { background: #c6f6d5; color: #22543d; }
+    .score-med { background: #fef08a; color: #854d0e; }
+    .score-low { background: #fed7d7; color: #742a2a; }
+    
+    .habit-grid {
+      display: none;
+      padding: 10px;
+    }
+    
+    .habit-grid.active {
+      display: block;
+    }
+    
+    .habit-row {
+      display: grid;
+      grid-template-columns: 2fr 60px repeat(7, 1fr);
+      gap: 5px;
+      padding: 12px 5px;
+      border-bottom: 1px solid #e2e8f0;
+      align-items: center;
+    }
+    
+    .habit-name {
+      font-weight: 500;
+      color: #2d3748;
+      font-size: 0.9em;
+    }
+    
+    .habit-target {
+      font-size: 0.7em;
+      color: #718096;
+    }
+    
+    .habit-percent {
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.9em;
+    }
+    
+    .day-cell {
+      text-align: center;
+    }
+    
+    .checkbox {
+      width: 28px;
+      height: 28px;
+      border: 2px solid #cbd5e0;
+      border-radius: 50%;
+      cursor: pointer;
+      display: inline-block;
+      transition: all 0.2s;
+      position: relative;
+      touch-action: manipulation;
+    }
+    
+    .checkbox:active {
+      transform: scale(0.9);
+    }
+    
+    .checkbox.checked {
+      background: #48bb78;
+      border-color: #48bb78;
+    }
+    
+    .checkbox.checked::after {
+      content: '✓';
+      color: white;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    .checkbox.inactive {
+      background: #f7fafc;
+      border-color: #e2e8f0;
+      cursor: default;
+    }
+    
+    .checkbox.missed {
+      border-color: #fc8181;
+      background: #fff5f5;
+    }
+    
+    .day-headers {
+      display: grid;
+      grid-template-columns: 2fr 60px repeat(7, 1fr);
+      gap: 5px;
+      padding: 12px 10px;
+      background: #f7fafc;
+      font-weight: 600;
+      color: #4a5568;
+      border-bottom: 2px solid #e2e8f0;
+      font-size: 0.75em;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    .day-header {
+      text-align: center;
+    }
+    
+    input[type="number"] {
+      width: 50px;
+      padding: 4px;
+      border: 2px solid #cbd5e0;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 0.85em;
+    }
+
+    .monthly-grid {
+      display: grid;
+      gap: 15px;
+    }
+
+    .goal-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+    }
+
+    .goal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .goal-title {
+      font-weight: 600;
+      font-size: 1.1em;
+      color: #2d3748;
+    }
+
+    .goal-target {
+      font-size: 0.85em;
+      color: #718096;
+      margin-bottom: 15px;
+    }
+
+    .month-tracker {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 10px;
+    }
+
+    .month-box {
+      padding: 10px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .month-box:hover {
+      border-color: #667eea;
+    }
+
+    .month-box.completed {
+      background: #c6f6d5;
+      border-color: #48bb78;
+    }
+
+    .month-name {
+      font-size: 0.8em;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: white;
+      font-size: 1.2em;
+    }
+    
+    @media (max-width: 768px) {
+      h1 { font-size: 1.3em; }
+      .habit-row {
+        grid-template-columns: 1fr 50px repeat(7, 32px);
+        gap: 3px;
+      }
+      .habit-name { font-size: 0.8em; }
+      .checkbox { width: 24px; height: 24px; }
+      .day-headers { font-size: 0.7em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading">Loading...</div>
+
+  <div class="login-screen" id="login-screen">
+    <div class="login-card">
+      <h1>Year of Follow-Through</h1>
+      <p>Track your habits across all devices</p>
+      <button class="google-btn" onclick="signInWithGoogle()">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Sign in with Google
+      </button>
+    </div>
+  </div>
+
+  <div class="container app-content" id="app-content">
+    <div class="header">
+      <div class="header-top">
+        <div>
+          <h1>2026: Year of Follow-Through</h1>
+          <p class="subtitle">I become what I repeatedly do</p>
+        </div>
+        <div class="user-info">
+          <img id="user-avatar" class="user-avatar" src="" alt="">
+          <button class="logout-btn" onclick="signOut()">Sign Out</button>
+        </div>
+      </div>
+
+      <div class="quote-box" id="quote-box">
+        <div class="quote-text" id="quote-text"></div>
+        <div class="quote-author">— Your Daily Mantra</div>
+      </div>
+      
+      <div class="stats">
+        <div class="stat-card">
+          <h3>Score</h3>
+          <div class="value" id="total-score">0%</div>
+        </div>
+        <div class="stat-card">
+          <h3>Habits</h3>
+          <div class="value">15</div>
+        </div>
+        <div class="stat-card">
+          <h3>Checks</h3>
+          <div class="value" id="week-total">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('weekly')">Weekly</button>
+      <button class="tab" onclick="switchTab('monthly')">Monthly</button>
+      <button class="tab" onclick="switchTab('quarterly')">Quarterly</button>
+    </div>
+
+    <div id="weekly-content" class="tab-content active">
+      <div class="week-nav">
+        <button onclick="changeWeek(-1)">← Prev</button>
+        <div class="week-info" id="week-display"></div>
+        <button onclick="changeWeek(1)">Next →</button>
+      </div>
+      
+      <div class="day-headers">
+        <div>Habit</div>
+        <div style="text-align: center;">%</div>
+        <div class="day-header">Su</div>
+        <div class="day-header">M</div>
+        <div class="day-header">Tu</div>
+        <div class="day-header">W</div>
+        <div class="day-header">Th</div>
+        <div class="day-header">F</div>
+        <div class="day-header">Sa</div>
+      </div>
+      
+      <div id="habits-container"></div>
+    </div>
+
+    <div id="monthly-content" class="tab-content">
+      <div class="monthly-grid" id="monthly-goals"></div>
+    </div>
+
+    <div id="quarterly-content" class="tab-content">
+      <div class="monthly-grid" id="quarterly-goals"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut as firebaseSignOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDnFL7zN484-YNFZyePDAs_PZPcnzEjKkA",
+      authDomain: "follow-through-tracker-2e650.firebaseapp.com",
+      projectId: "follow-through-tracker-2e650",
+      storageBucket: "follow-through-tracker-2e650.firebasestorage.app",
+      messagingSenderId: "79250934560",
+      appId: "1:79250934560:web:282d65f4bb76e221302545"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    let currentUser = null;
+    let habitData = {};
+    let currentWeekOffset = 0;
+    let currentTab = 'weekly';
+
+    const quotes = [
+      "Don't drift",
+      "Good enough, done repeatedly",
+      "Structure beats motivation",
+      "Progress beats intention",
+      "I become what I repeatedly do",
+      "The obstacle is the way",
+      "Discipline equals freedom",
+      "Start where you are, use what you have, do what you can",
+      "You miss 100% of the shots you don't take",
+      "The best time to plant a tree was 20 years ago. The second best time is now"
+    ];
+
+    // Get daily quote (changes daily)
+    function getDailyQuote() {
+      const today = new Date();
+      const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+      return quotes[dayOfYear % quotes.length];
+    }
+
+    window.signInWithGoogle = async function() {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        console.error("Error signing in:", error);
+        alert("Error signing in. Please try again.");
+      }
+    };
+
+    window.signOut = async function() {
+      try {
+        await firebaseSignOut(auth);
+      } catch (error) {
+        console.error("Error signing out:", error);
+      }
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+      document.getElementById('loading').style.display = 'none';
+      
+      if (user) {
+        currentUser = user;
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app-content').classList.add('active');
+        document.getElementById('user-avatar').src = user.photoURL;
+        document.getElementById('quote-text').textContent = `"${getDailyQuote()}"`;
+        
+        // Listen to Firestore for real-time sync
+        const userDocRef = doc(db, 'users', user.uid);
+        onSnapshot(userDocRef, (docSnap) => {
+          if (docSnap.exists()) {
+            habitData = docSnap.data().habits || {};
+          }
+          render();
+        });
+      } else {
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('app-content').classList.remove('active');
+      }
+    });
+
+    async function saveData() {
+      if (!currentUser) return;
+      try {
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        await setDoc(userDocRef, { habits: habitData }, { merge: true });
+      } catch (error) {
+        console.error("Error saving data:", error);
+      }
+    }
+
+    function getWeekStart(offset = 0) {
+      const today = new Date();
+      const day = today.getDay();
+      const diff = today.getDate() - day + (offset * 7);
+      const weekStart = new Date(today);
+      weekStart.setDate(diff);
+      weekStart.setHours(0, 0, 0, 0);
+      return weekStart;
+    }
+
+    function getWeekDates() {
+      const weekStart = getWeekStart(currentWeekOffset);
+      const dates = [];
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(weekStart);
+        date.setDate(weekStart.getDate() + i);
+        dates.push(date);
+      }
+      return dates;
+    }
+
+    function formatDate(date) {
+      return date.toISOString().split('T')[0];
+    }
+
+    const categories = {
+      'Daily Discipline': [
+        { id: 'bedtime', name: 'Bedtime by 9:30pm', target: 'Sun-Thu', targetDays: [0,1,2,3,4] },
+        { id: 'phone-free', name: 'Phone-free morning (20 min)', target: '5x/week' },
+        { id: 'journal', name: 'Journal', target: '4x/week' },
+        { id: 'reading', name: 'Read before bed', target: 'M-F', targetDays: [1,2,3,4,5] },
+        { id: 'no-beers', name: 'No weekday fridge beers', target: 'M-F', targetDays: [1,2,3,4,5] },
+        { id: 'meal-prep', name: 'Meal prep lunches', target: 'Weekly', weekly: true }
+      ],
+      'Physical Readiness': [
+        { id: 'workout', name: 'Workout (Run/Gym/Kettlebell)', target: '4x/week' },
+        { id: 'walks', name: 'Intentional walk', target: '3x/week' },
+        { id: 'weight', name: 'Weight (lbs)', target: 'Track', type: 'number', weekly: true }
+      ],
+      'Family & Friends': [
+        { id: 'solo-dad', name: 'Solo dad time with Artie', target: '1x/week' },
+        { id: 'stay-in-touch', name: 'Meaningful contact', target: '2x/week' },
+        { id: 'photo-dump', name: 'Sunday photo collection', target: 'Weekly', targetDays: [0], weekly: true }
+      ]
+    };
+
+    const monthlyGoals = [
+      { id: 'date-night', name: 'Date night with Kate', target: '1x/month' },
+      { id: 'host-gather', name: 'Host/gather friends', target: '1x/month' }
+    ];
+
+    const quarterlyGoals = [
+      { id: 'create-together', name: 'Create something with Kate & Artie', target: '1x/quarter' },
+      { id: 'plan-trip', name: 'Plan a trip', target: '1x/quarter' },
+      { id: 'golf-lesson', name: 'Golf lesson', target: '1x/quarter' },
+      { id: 'leather', name: 'Leather project', target: '1x/quarter' },
+      { id: 'career', name: 'Career exploration progress', target: 'Ongoing' },
+      { id: 'counseling', name: 'Therapy/counseling session', target: 'As needed' }
+    ];
+
+    window.toggleHabit = function(habitId, dateStr) {
+      const key = `${habitId}-${dateStr}`;
+      habitData[key] = !habitData[key];
+      saveData();
+    };
+
+    window.updateWeight = function(dateStr, value) {
+      habitData[`weight-${dateStr}`] = value;
+      saveData();
+    };
+
+    window.toggleMonthlyGoal = function(goalId, month) {
+      const key = `${goalId}-${month}`;
+      habitData[key] = !habitData[key];
+      saveData();
+    };
+
+    function getCompletion(habitId, targetDays) {
+      const dates = getWeekDates();
+      let completed = 0;
+      let applicable = 0;
+      
+      dates.forEach((date, index) => {
+        if (!targetDays || targetDays.includes(index)) {
+          applicable++;
+          const key = `${habitId}-${formatDate(date)}`;
+          if (habitData[key]) completed++;
+        }
+      });
+      
+      return applicable > 0 ? Math.round((completed / applicable) * 100) : 0;
+    }
+
+    window.changeWeek = function(offset) {
+      currentWeekOffset += offset;
+      render();
+    };
+
+    window.toggleCategory = function(categoryName) {
+      const element = document.getElementById(`cat-${categoryName.replace(/\s+/g, '-')}`);
+      if (element) {
+        element.classList.toggle('active');
+      }
+    };
+
+    window.switchTab = function(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(`${tab}-content`).classList.add('active');
+      
+      render();
+    };
+
+    function renderMonthlyGoals() {
+      const container = document.getElementById('monthly-goals');
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const year = new Date().getFullYear();
+      
+      container.innerHTML = monthlyGoals.map(goal => `
+        <div class="goal-card">
+          <div class="goal-header">
+            <div class="goal-title">${goal.name}</div>
+          </div>
+          <div class="goal-target">${goal.target}</div>
+          <div class="month-tracker">
+            ${months.map((month, idx) => {
+              const key = `${goal.id}-${year}-${idx}`;
+              const completed = habitData[key] || false;
+              return `
+                <div class="month-box ${completed ? 'completed' : ''}" 
+                     onclick="toggleMonthlyGoal('${goal.id}', '${year}-${idx}')">
+                  <div class="month-name">${month}</div>
+                  <div>${completed ? '✓' : '○'}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderQuarterlyGoals() {
+      const container = document.getElementById('quarterly-goals');
+      const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+      const year = new Date().getFullYear();
+      
+      container.innerHTML = quarterlyGoals.map(goal => `
+        <div class="goal-card">
+          <div class="goal-header">
+            <div class="goal-title">${goal.name}</div>
+          </div>
+          <div class="goal-target">${goal.target}</div>
+          <div class="month-tracker">
+            ${quarters.map((quarter, idx) => {
+              const key = `${goal.id}-${year}-Q${idx+1}`;
+              const completed = habitData[key] || false;
+              return `
+                <div class="month-box ${completed ? 'completed' : ''}" 
+                     onclick="toggleMonthlyGoal('${goal.id}', '${year}-Q${idx+1}')">
+                  <div class="month-name">${quarter}</div>
+                  <div>${completed ? '✓' : '○'}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function render() {
+      if (currentTab === 'monthly') {
+        renderMonthlyGoals();
+        return;
+      }
+      if (currentTab === 'quarterly') {
+        renderQuarterlyGoals();
+        return;
+      }
+
+      const dates = getWeekDates();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const weekDisplay = document.getElementById('week-display');
+      weekDisplay.textContent = `${dates[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${dates[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+      
+      let totalScore = 0;
+      let totalHabits = 0;
+      let weekTotal = 0;
+      
+      const container = document.getElementById('habits-container');
+      container.innerHTML = '';
+      
+      Object.entries(categories).forEach(([categoryName, habits]) => {
+        const categoryDiv = document.createElement('div');
+        categoryDiv.className = 'category';
+        
+        let categoryScore = 0;
+        habits.forEach(habit => {
+          const score = getCompletion(habit.id, habit.targetDays);
+          categoryScore += score;
+          totalScore += score;
+          totalHabits++;
+        });
+        categoryScore = Math.round(categoryScore / habits.length);
+        
+        const scoreClass = categoryScore >= 75 ? 'score-high' : categoryScore >= 50 ? 'score-med' : 'score-low';
+        
+        const habitRows = habits.map(habit => {
+          const percent = getCompletion(habit.id, habit.targetDays);
+          const dayCells = dates.map((date, index) => {
+            const dateStr = formatDate(date);
+            const isApplicable = !habit.targetDays || habit.targetDays.includes(index);
+            const isChecked = habitData[`${habit.id}-${dateStr}`];
+            const isPast = date < today;
+            
+            if (habit.type === 'number') {
+              if (habit.weekly && index !== 0) {
+                return '<div class="day-cell">-</div>';
+              }
+              const value = habitData[`weight-${dateStr}`] || '';
+              return `<div class="day-cell"><input type="number" placeholder="lbs" value="${value}" onchange="updateWeight('${dateStr}', this.value)"></div>`;
+            }
+            
+            if (habit.weekly && index !== 0) {
+              return '<div class="day-cell">-</div>';
+            }
+            
+            if (!isApplicable) {
+              return '<div class="day-cell"><div class="checkbox inactive"></div></div>';
+            }
+            
+            if (isChecked) weekTotal++;
+            
+            const missedClass = isPast && !isChecked && isApplicable ? 'missed' : '';
+            
+            return `<div class="day-cell"><div class="checkbox ${isChecked ? 'checked' : ''} ${missedClass}" onclick="toggleHabit('${habit.id}', '${dateStr}')"></div></div>`;
+          }).join('');
+          
+          return `
+            <div class="habit-row">
+              <div>
+                <div class="habit-name">${habit.name}</div>
+                <div class="habit-target">${habit.target}</div>
+              </div>
+              <div class="habit-percent">${percent}%</div>
+              ${dayCells}
+            </div>
+          `;
+        }).join('');
+        
+        categoryDiv.innerHTML = `
+          <div class="category-header" onclick="toggleCategory('${categoryName}')">
+            <div class="category-title">${categoryName}</div>
+            <div class="category-score ${scoreClass}">${categoryScore}%</div>
+          </div>
+          <div class="habit-grid active" id="cat-${categoryName.replace(/\s+/g, '-')}">
+            ${habitRows}
+          </div>
+        `;
+        
+        container.appendChild(categoryDiv);
+      });
+      
+      document.getElementById('total-score').textContent = Math.round(totalScore / totalHabits) + '%';
+      document.getElementById('week-total').textContent = weekTotal;
+    }
+  </script>
+</body>
+</html>
