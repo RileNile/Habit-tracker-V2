@@ -727,7 +727,7 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-    import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut as firebaseSignOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut as firebaseSignOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
     import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
     const firebaseConfig = {
@@ -789,13 +789,38 @@
         return;
       }
       
+      // Detect if mobile
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      
       try {
-        sessionStorage.setItem('pendingRedirect', 'true');
-        await signInWithRedirect(auth, provider);
+        if (isMobile) {
+          // Mobile: use redirect (more reliable on iOS)
+          sessionStorage.setItem('pendingRedirect', 'true');
+          console.log('Using redirect sign-in for mobile');
+          await signInWithRedirect(auth, provider);
+        } else {
+          // Desktop: try popup first (better UX)
+          console.log('Using popup sign-in for desktop');
+          await signInWithPopup(auth, provider);
+          sessionStorage.removeItem('pendingRedirect');
+        }
       } catch (error) {
         console.error("Error signing in:", error);
         sessionStorage.removeItem('pendingRedirect');
-        alert("Error signing in: " + error.message);
+        
+        // If popup fails on desktop, fallback to redirect
+        if (!isMobile && error.code === 'auth/popup-blocked') {
+          try {
+            console.log('Popup blocked, trying redirect...');
+            sessionStorage.setItem('pendingRedirect', 'true');
+            await signInWithRedirect(auth, provider);
+          } catch (redirectError) {
+            console.error("Redirect also failed:", redirectError);
+            alert("Please allow popups or try again: " + redirectError.message);
+          }
+        } else {
+          alert("Sign in error: " + error.message + " (Code: " + error.code + ")");
+        }
       }
     };
 
