@@ -789,6 +789,12 @@
         return;
       }
       
+      // Show loading state
+      const btn = event.target;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Signing in...';
+      btn.disabled = true;
+      
       // Detect if mobile
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       
@@ -797,25 +803,35 @@
           // Mobile: use redirect (more reliable on iOS)
           sessionStorage.setItem('pendingRedirect', 'true');
           console.log('Using redirect sign-in for mobile');
+          console.log('Current domain:', window.location.hostname);
           await signInWithRedirect(auth, provider);
+          // Note: page will redirect, so button state doesn't matter
         } else {
           // Desktop: try popup first (better UX)
           console.log('Using popup sign-in for desktop');
           await signInWithPopup(auth, provider);
           sessionStorage.removeItem('pendingRedirect');
+          btn.innerHTML = originalText;
+          btn.disabled = false;
         }
       } catch (error) {
         console.error("Error signing in:", error);
         sessionStorage.removeItem('pendingRedirect');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
         
         // If popup fails on desktop, fallback to redirect
         if (!isMobile && error.code === 'auth/popup-blocked') {
           try {
             console.log('Popup blocked, trying redirect...');
+            btn.innerHTML = 'Redirecting...';
+            btn.disabled = true;
             sessionStorage.setItem('pendingRedirect', 'true');
             await signInWithRedirect(auth, provider);
           } catch (redirectError) {
             console.error("Redirect also failed:", redirectError);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
             alert("Please allow popups or try again: " + redirectError.message);
           }
         } else {
@@ -832,52 +848,81 @@
       }
     };
 
-    onAuthStateChanged(auth, async (user) => {
+    function showApp(user) {
+      currentUser = user;
       document.getElementById('loading').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app-content').classList.add('active');
+      document.getElementById('user-avatar').src = user.photoURL;
+      document.getElementById('quote-text').textContent = `"${getDailyQuote()}"`;
       
+      // Apply saved theme
+      document.body.setAttribute('data-theme', currentTheme);
+      
+      const userDocRef = doc(db, 'users', user.uid);
+      onSnapshot(userDocRef, (docSnap) => {
+        if (docSnap.exists()) {
+          habitData = docSnap.data().habits || {};
+        }
+        render();
+      });
+    }
+
+    function showLogin() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('app-content').classList.remove('active');
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      console.log('Auth state changed:', user ? user.email : 'not signed in');
       if (user) {
-        currentUser = user;
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('app-content').classList.add('active');
-        document.getElementById('user-avatar').src = user.photoURL;
-        document.getElementById('quote-text').textContent = `"${getDailyQuote()}"`;
-        
-        // Apply saved theme
-        document.body.setAttribute('data-theme', currentTheme);
-        
-        const userDocRef = doc(db, 'users', user.uid);
-        onSnapshot(userDocRef, (docSnap) => {
-          if (docSnap.exists()) {
-            habitData = docSnap.data().habits || {};
-          }
-          render();
-        });
+        showApp(user);
       } else {
-        document.getElementById('login-screen').style.display = 'flex';
-        document.getElementById('app-content').classList.remove('active');
+        showLogin();
       }
     });
 
     // Prevent redirect loop
     let isProcessingRedirect = false;
     
+    // Check for redirect result on page load (important for mobile)
     getRedirectResult(auth).then((result) => {
       if (result && !isProcessingRedirect) {
         isProcessingRedirect = true;
-        console.log("Signed in via redirect");
-        // Clear any pending redirect state
+        console.log("Successfully signed in via redirect:", result.user.email);
         sessionStorage.removeItem('pendingRedirect');
+        
+        // CRITICAL: Force show app immediately after redirect
+        showApp(result.user);
+      } else if (!result) {
+        console.log("No redirect result found");
+        sessionStorage.removeItem('pendingRedirect');
+        
+        // Check if user is already signed in (handles page refresh)
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+          console.log("User already signed in:", currentUser.email);
+          showApp(currentUser);
+        }
       }
     }).catch((error) => {
       console.error("Redirect error:", error);
       isProcessingRedirect = false;
       sessionStorage.removeItem('pendingRedirect');
       
-      // Only alert for actual errors, not cancellations
-      if (error.code !== 'auth/popup-closed-by-user' && 
-          error.code !== 'auth/cancelled-popup-request' &&
-          error.code !== 'auth/operation-not-allowed') {
-        alert("Sign in error: " + error.message);
+      // Show specific error messages
+      if (error.code === 'auth/unauthorized-domain') {
+        alert("Domain not authorized. Please add rilenile.github.io to Firebase authorized domains.");
+      } else if (error.code === 'auth/operation-not-allowed') {
+        alert("Google sign-in not enabled. Please enable it in Firebase console.");
+      } else if (error.code !== 'auth/popup-closed-by-user' && 
+                 error.code !== 'auth/cancelled-popup-request') {
+        console.error("Auth error details:", {
+          code: error.code,
+          message: error.message,
+          domain: window.location.hostname
+        });
       }
     });
 
