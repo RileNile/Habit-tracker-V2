@@ -783,11 +783,19 @@
     };
 
     window.signInWithGoogle = async function() {
+      // Prevent multiple simultaneous sign-in attempts
+      if (sessionStorage.getItem('pendingRedirect')) {
+        console.log('Already redirecting...');
+        return;
+      }
+      
       try {
+        sessionStorage.setItem('pendingRedirect', 'true');
         await signInWithRedirect(auth, provider);
       } catch (error) {
         console.error("Error signing in:", error);
-        alert("Error signing in. Please try again.");
+        sessionStorage.removeItem('pendingRedirect');
+        alert("Error signing in: " + error.message);
       }
     };
 
@@ -825,14 +833,26 @@
       }
     });
 
+    // Prevent redirect loop
+    let isProcessingRedirect = false;
+    
     getRedirectResult(auth).then((result) => {
-      if (result) {
+      if (result && !isProcessingRedirect) {
+        isProcessingRedirect = true;
         console.log("Signed in via redirect");
+        // Clear any pending redirect state
+        sessionStorage.removeItem('pendingRedirect');
       }
     }).catch((error) => {
       console.error("Redirect error:", error);
-      if (error.code !== 'auth/popup-closed-by-user') {
-        alert("Sign in failed. Please try again.");
+      isProcessingRedirect = false;
+      sessionStorage.removeItem('pendingRedirect');
+      
+      // Only alert for actual errors, not cancellations
+      if (error.code !== 'auth/popup-closed-by-user' && 
+          error.code !== 'auth/cancelled-popup-request' &&
+          error.code !== 'auth/operation-not-allowed') {
+        alert("Sign in error: " + error.message);
       }
     });
 
