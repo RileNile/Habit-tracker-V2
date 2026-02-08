@@ -9,6 +9,59 @@
   <meta name="theme-color" content="#667eea">
   <title>2026: Year of Follow-Through</title>
   <style>
+    :root {
+      --primary-start: #667eea;
+      --primary-end: #764ba2;
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --card-bg: white;
+      --text-primary: #2d3748;
+      --text-secondary: #718096;
+      --success: #48bb78;
+      --warning: #f6ad55;
+      --danger: #fc8181;
+      --border: #e2e8f0;
+    }
+
+    [data-theme="dark"] {
+      --primary-start: #4a5568;
+      --primary-end: #2d3748;
+      --bg-gradient: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+      --card-bg: #2d3748;
+      --text-primary: #f7fafc;
+      --text-secondary: #cbd5e0;
+      --border: #4a5568;
+    }
+
+    [data-theme="cream"] {
+      --primary-start: #d4a574;
+      --primary-end: #b8956a;
+      --bg-gradient: linear-gradient(135deg, #f5f5dc 0%, #fffaf0 100%);
+      --card-bg: #fffef9;
+      --text-primary: #3e2723;
+      --text-secondary: #6d4c41;
+      --border: #d7ccc8;
+    }
+
+    [data-theme="green"] {
+      --primary-start: #48bb78;
+      --primary-end: #38a169;
+      --bg-gradient: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
+      --card-bg: white;
+      --text-primary: #22543d;
+      --text-secondary: #2f855a;
+      --border: #9ae6b4;
+    }
+
+    [data-theme="texas"] {
+      --primary-start: #0047AB;
+      --primary-end: #B22234;
+      --bg-gradient: linear-gradient(135deg, #0047AB 0%, #B22234 100%);
+      --card-bg: white;
+      --text-primary: #2d3748;
+      --text-secondary: #718096;
+      --border: #e2e8f0;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -18,10 +71,11 @@
     
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: var(--bg-gradient);
       min-height: 100vh;
       padding: 10px;
       overflow-x: hidden;
+      transition: all 0.3s ease;
     }
     
     .container {
@@ -38,7 +92,7 @@
     }
 
     .login-card {
-      background: white;
+      background: var(--card-bg);
       padding: 40px;
       border-radius: 20px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -47,19 +101,19 @@
     }
 
     .login-card h1 {
-      color: #2d3748;
+      color: var(--text-primary);
       margin-bottom: 10px;
       font-size: 2em;
     }
 
     .login-card p {
-      color: #718096;
+      color: var(--text-secondary);
       margin-bottom: 30px;
     }
 
     .google-btn {
-      background: white;
-      border: 2px solid #e2e8f0;
+      background: var(--card-bg);
+      border: 2px solid var(--border);
       padding: 12px 24px;
       border-radius: 8px;
       cursor: pointer;
@@ -74,8 +128,7 @@
     }
 
     .google-btn:hover {
-      border-color: #667eea;
-      background: #f7fafc;
+      border-color: var(--primary-start);
     }
 
     .app-content {
@@ -87,7 +140,7 @@
     }
     
     .header {
-      background: white;
+      background: var(--card-bg);
       padding: 20px;
       border-radius: 15px;
       margin-bottom: 15px;
@@ -113,8 +166,8 @@
       border-radius: 50%;
     }
 
-    .logout-btn {
-      background: #f56565;
+    .settings-btn, .logout-btn {
+      background: var(--danger);
       color: white;
       border: none;
       padding: 8px 16px;
@@ -122,10 +175,55 @@
       cursor: pointer;
       font-size: 0.85em;
       font-weight: 600;
+      margin-left: 5px;
+    }
+
+    .settings-btn {
+      background: var(--text-secondary);
+    }
+
+    .theme-selector {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      display: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .theme-selector.active {
+      display: block;
+    }
+
+    .theme-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .theme-option {
+      padding: 15px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .theme-option:hover {
+      transform: scale(1.05);
+    }
+
+    .theme-option.active {
+      border-color: var(--primary-start);
+      background: var(--primary-start);
+      color: white;
     }
 
     .quote-box {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
       color: white;
       padding: 20px;
       border-radius: 10px;
@@ -147,13 +245,13 @@
     }
     
     h1 {
-      color: #2d3748;
+      color: var(--text-primary);
       font-size: 1.5em;
       margin-bottom: 5px;
     }
     
     .subtitle {
-      color: #718096;
+      color: var(--text-secondary);
       font-size: 0.9em;
     }
     
@@ -165,7 +263,7 @@
     }
     
     .stat-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
       padding: 15px;
       border-radius: 10px;
       color: white;
@@ -186,7 +284,7 @@
     }
 
     .tabs {
-      background: white;
+      background: var(--card-bg);
       border-radius: 15px;
       margin-bottom: 15px;
       padding: 10px;
@@ -199,16 +297,16 @@
       flex: 1;
       padding: 12px;
       border: none;
-      background: #f7fafc;
+      background: var(--border);
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
-      color: #718096;
+      color: var(--text-secondary);
       transition: all 0.3s;
     }
 
     .tab.active {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
       color: white;
     }
 
@@ -221,7 +319,7 @@
     }
     
     .week-nav {
-      background: white;
+      background: var(--card-bg);
       padding: 15px;
       border-radius: 15px;
       margin-bottom: 15px;
@@ -232,7 +330,7 @@
     }
     
     .week-nav button {
-      background: #667eea;
+      background: var(--primary-start);
       color: white;
       border: none;
       padding: 10px 15px;
@@ -245,19 +343,19 @@
     }
     
     .week-nav button:active {
-      background: #5568d3;
+      opacity: 0.8;
       transform: scale(0.95);
     }
     
     .week-info {
       text-align: center;
       font-weight: 600;
-      color: #2d3748;
+      color: var(--text-primary);
       font-size: 0.9em;
     }
     
     .category {
-      background: white;
+      background: var(--card-bg);
       border-radius: 15px;
       margin-bottom: 15px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -265,24 +363,24 @@
     }
     
     .category-header {
-      background: linear-gradient(90deg, #f7fafc 0%, #edf2f7 100%);
+      background: var(--border);
       padding: 15px;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 2px solid #e2e8f0;
+      border-bottom: 2px solid var(--border);
       touch-action: manipulation;
     }
     
     .category-header:active {
-      background: linear-gradient(90deg, #edf2f7 0%, #e2e8f0 100%);
+      opacity: 0.9;
     }
     
     .category-title {
       font-size: 1.1em;
       font-weight: 600;
-      color: #2d3748;
+      color: var(--text-primary);
     }
     
     .category-score {
@@ -310,25 +408,26 @@
       grid-template-columns: 2fr 60px repeat(7, 1fr);
       gap: 5px;
       padding: 12px 5px;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid var(--border);
       align-items: center;
     }
     
     .habit-name {
       font-weight: 500;
-      color: #2d3748;
+      color: var(--text-primary);
       font-size: 0.9em;
     }
     
     .habit-target {
       font-size: 0.7em;
-      color: #718096;
+      color: var(--text-secondary);
     }
     
     .habit-percent {
       text-align: center;
       font-weight: 600;
       font-size: 0.9em;
+      color: var(--text-primary);
     }
     
     .day-cell {
@@ -352,11 +451,21 @@
     }
     
     .checkbox.checked {
-      background: #48bb78;
-      border-color: #48bb78;
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .checkbox.goal-met {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .checkbox.extra-credit {
+      background: #3182ce;
+      border-color: #3182ce;
     }
     
-    .checkbox.checked::after {
+    .checkbox.checked::after, .checkbox.goal-met::after, .checkbox.extra-credit::after {
       content: '✓';
       color: white;
       position: absolute;
@@ -368,14 +477,27 @@
     }
     
     .checkbox.inactive {
-      background: #f7fafc;
+      background: transparent;
       border-color: #e2e8f0;
+      opacity: 0.3;
       cursor: default;
     }
     
     .checkbox.missed {
-      border-color: #fc8181;
+      border-color: var(--danger);
       background: #fff5f5;
+    }
+
+    .checkbox.not-applicable {
+      background: transparent;
+      border-color: #e2e8f0;
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .checkbox.optional {
+      border-style: dashed;
+      border-color: #cbd5e0;
     }
     
     .day-headers {
@@ -383,10 +505,10 @@
       grid-template-columns: 2fr 60px repeat(7, 1fr);
       gap: 5px;
       padding: 12px 10px;
-      background: #f7fafc;
+      background: var(--border);
       font-weight: 600;
-      color: #4a5568;
-      border-bottom: 2px solid #e2e8f0;
+      color: var(--text-primary);
+      border-bottom: 2px solid var(--border);
       font-size: 0.75em;
       position: sticky;
       top: 0;
@@ -400,10 +522,12 @@
     input[type="number"] {
       width: 50px;
       padding: 4px;
-      border: 2px solid #cbd5e0;
+      border: 2px solid var(--border);
       border-radius: 5px;
       text-align: center;
       font-size: 0.85em;
+      background: var(--card-bg);
+      color: var(--text-primary);
     }
 
     .monthly-grid {
@@ -412,10 +536,10 @@
     }
 
     .goal-card {
-      background: white;
+      background: var(--card-bg);
       padding: 20px;
       border-radius: 10px;
-      border-left: 4px solid #667eea;
+      border-left: 4px solid var(--primary-start);
     }
 
     .goal-header {
@@ -428,12 +552,12 @@
     .goal-title {
       font-weight: 600;
       font-size: 1.1em;
-      color: #2d3748;
+      color: var(--text-primary);
     }
 
     .goal-target {
       font-size: 0.85em;
-      color: #718096;
+      color: var(--text-secondary);
       margin-bottom: 15px;
     }
 
@@ -445,26 +569,39 @@
 
     .month-box {
       padding: 10px;
-      border: 2px solid #e2e8f0;
+      border: 2px solid var(--border);
       border-radius: 8px;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s;
+      background: var(--card-bg);
     }
 
     .month-box:hover {
-      border-color: #667eea;
+      border-color: var(--primary-start);
     }
 
     .month-box.completed {
       background: #c6f6d5;
-      border-color: #48bb78;
+      border-color: var(--success);
     }
 
     .month-name {
       font-size: 0.8em;
       font-weight: 600;
       margin-bottom: 5px;
+      color: var(--text-primary);
+    }
+
+    .handicap-input {
+      width: 70px;
+      padding: 6px;
+      border: 2px solid var(--border);
+      border-radius: 5px;
+      text-align: center;
+      font-size: 0.9em;
+      background: var(--card-bg);
+      color: var(--text-primary);
     }
 
     .loading {
@@ -514,7 +651,19 @@
         </div>
         <div class="user-info">
           <img id="user-avatar" class="user-avatar" src="" alt="">
+          <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
           <button class="logout-btn" onclick="signOut()">Sign Out</button>
+        </div>
+      </div>
+
+      <div class="theme-selector" id="theme-selector">
+        <h3 style="margin-bottom: 10px; color: var(--text-primary);">Choose Theme</h3>
+        <div class="theme-options">
+          <div class="theme-option active" onclick="setTheme('default')">Default</div>
+          <div class="theme-option" onclick="setTheme('dark')">Dark Mode</div>
+          <div class="theme-option" onclick="setTheme('cream')">Cream</div>
+          <div class="theme-option" onclick="setTheme('green')">Green</div>
+          <div class="theme-option" onclick="setTheme('texas')">Texas</div>
         </div>
       </div>
 
@@ -530,7 +679,7 @@
         </div>
         <div class="stat-card">
           <h3>Habits</h3>
-          <div class="value">15</div>
+          <div class="value">17</div>
         </div>
         <div class="stat-card">
           <h3>Checks</h3>
@@ -599,6 +748,7 @@
     let habitData = {};
     let currentWeekOffset = 0;
     let currentTab = 'weekly';
+    let currentTheme = localStorage.getItem('theme') || 'default';
 
     const quotes = [
       "Don't drift",
@@ -613,12 +763,24 @@
       "The best time to plant a tree was 20 years ago. The second best time is now"
     ];
 
-    // Get daily quote (changes daily)
     function getDailyQuote() {
       const today = new Date();
       const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
       return quotes[dayOfYear % quotes.length];
     }
+
+    window.setTheme = function(theme) {
+      currentTheme = theme;
+      localStorage.setItem('theme', theme);
+      document.body.setAttribute('data-theme', theme);
+      
+      document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+      event.target.classList.add('active');
+    };
+
+    window.toggleSettings = function() {
+      document.getElementById('theme-selector').classList.toggle('active');
+    };
 
     window.signInWithGoogle = async function() {
       try {
@@ -647,7 +809,9 @@
         document.getElementById('user-avatar').src = user.photoURL;
         document.getElementById('quote-text').textContent = `"${getDailyQuote()}"`;
         
-        // Listen to Firestore for real-time sync
+        // Apply saved theme
+        document.body.setAttribute('data-theme', currentTheme);
+        
         const userDocRef = doc(db, 'users', user.uid);
         onSnapshot(userDocRef, (docSnap) => {
           if (docSnap.exists()) {
@@ -661,10 +825,8 @@
       }
     });
 
-    // Handle redirect result (for Safari/iOS)
     getRedirectResult(auth).then((result) => {
       if (result) {
-        // User successfully signed in
         console.log("Signed in via redirect");
       }
     }).catch((error) => {
@@ -711,28 +873,31 @@
 
     const categories = {
       'Daily Discipline': [
-        { id: 'bedtime', name: 'Bedtime by 9:30pm', target: 'Sun-Thu', targetDays: [0,1,2,3,4] },
-        { id: 'phone-free', name: 'Phone-free morning (20 min)', target: '5x/week' },
-        { id: 'journal', name: 'Journal', target: '4x/week' },
-        { id: 'reading', name: 'Read before bed', target: 'M-F', targetDays: [1,2,3,4,5] },
-        { id: 'no-beers', name: 'No weekday fridge beers', target: 'M-F', targetDays: [1,2,3,4,5] },
+        { id: 'bedtime', name: 'Bedtime by 9:30pm', target: 'Sun-Thu', targetDays: [0,1,2,3,4], goalCount: 5 },
+        { id: 'phone-free', name: 'Phone-free morning (20 min)', target: '5x/week', goalCount: 5 },
+        { id: 'journal', name: 'Journal', target: '4x/week', goalCount: 4 },
+        { id: 'reading', name: 'Read before bed', target: 'M-F', targetDays: [1,2,3,4,5], goalCount: 5 },
+        { id: 'no-beers', name: 'No weekday fridge beers', target: 'M-F', targetDays: [1,2,3,4,5], goalCount: 5, inverse: true },
         { id: 'meal-prep', name: 'Meal prep lunches', target: 'Weekly', weekly: true }
       ],
       'Physical Readiness': [
-        { id: 'workout', name: 'Workout (Run/Gym/Kettlebell)', target: '4x/week' },
-        { id: 'walks', name: 'Intentional walk', target: '3x/week' },
-        { id: 'weight', name: 'Weight (lbs)', target: 'Track', type: 'number', weekly: true }
+        { id: 'workout', name: 'Workout (Run/Gym/Kettlebell)', target: '4x/week', goalCount: 4 },
+        { id: 'walks', name: 'Intentional walk', target: '3x/week', goalCount: 3 },
+        { id: 'weight', name: 'Weight (lbs)', target: 'Track', type: 'number', weekly: true },
+        { id: 'driving-range', name: 'Driving range', target: 'Optional', optional: true },
+        { id: 'golf-round', name: 'Round of golf', target: 'Optional', optional: true }
       ],
       'Family & Friends': [
-        { id: 'solo-dad', name: 'Solo dad time with Artie', target: '1x/week' },
-        { id: 'stay-in-touch', name: 'Meaningful contact', target: '2x/week' },
+        { id: 'solo-dad', name: 'Solo dad time with Artie', target: '1x/week', goalCount: 1 },
+        { id: 'stay-in-touch', name: 'Meaningful contact', target: '2x/week', goalCount: 2 },
         { id: 'photo-dump', name: 'Sunday photo collection', target: 'Weekly', targetDays: [0], weekly: true }
       ]
     };
 
     const monthlyGoals = [
       { id: 'date-night', name: 'Date night with Kate', target: '1x/month' },
-      { id: 'host-gather', name: 'Host/gather friends', target: '1x/month' }
+      { id: 'host-gather', name: 'Host/gather friends', target: '1x/month' },
+      { id: 'ghin-handicap', name: 'GHIN Handicap', target: 'Track monthly', type: 'number' }
     ];
 
     const quarterlyGoals = [
@@ -755,13 +920,18 @@
       saveData();
     };
 
+    window.updateHandicap = function(month, value) {
+      habitData[`ghin-handicap-${month}`] = value;
+      saveData();
+    };
+
     window.toggleMonthlyGoal = function(goalId, month) {
       const key = `${goalId}-${month}`;
       habitData[key] = !habitData[key];
       saveData();
     };
 
-    function getCompletion(habitId, targetDays) {
+    function getCompletion(habitId, targetDays, goalCount) {
       const dates = getWeekDates();
       let completed = 0;
       let applicable = 0;
@@ -774,7 +944,9 @@
         }
       });
       
-      return applicable > 0 ? Math.round((completed / applicable) * 100) : 0;
+      // If there's a goal count, calculate based on that, otherwise use all applicable days
+      const total = goalCount || applicable;
+      return total > 0 ? Math.round((completed / total) * 100) : 0;
     }
 
     window.changeWeek = function(offset) {
@@ -805,27 +977,55 @@
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       const year = new Date().getFullYear();
       
-      container.innerHTML = monthlyGoals.map(goal => `
-        <div class="goal-card">
-          <div class="goal-header">
-            <div class="goal-title">${goal.name}</div>
+      container.innerHTML = monthlyGoals.map(goal => {
+        if (goal.type === 'number') {
+          return `
+            <div class="goal-card">
+              <div class="goal-header">
+                <div class="goal-title">${goal.name}</div>
+              </div>
+              <div class="goal-target">${goal.target}</div>
+              <div class="month-tracker">
+                ${months.map((month, idx) => {
+                  const key = `${goal.id}-${year}-${idx}`;
+                  const value = habitData[key] || '';
+                  return `
+                    <div class="month-box">
+                      <div class="month-name">${month}</div>
+                      <input type="number" class="handicap-input" placeholder="--" 
+                             value="${value}" 
+                             onchange="updateHandicap('${year}-${idx}', this.value)"
+                             step="0.1">
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }
+        
+        return `
+          <div class="goal-card">
+            <div class="goal-header">
+              <div class="goal-title">${goal.name}</div>
+            </div>
+            <div class="goal-target">${goal.target}</div>
+            <div class="month-tracker">
+              ${months.map((month, idx) => {
+                const key = `${goal.id}-${year}-${idx}`;
+                const completed = habitData[key] || false;
+                return `
+                  <div class="month-box ${completed ? 'completed' : ''}" 
+                       onclick="toggleMonthlyGoal('${goal.id}', '${year}-${idx}')">
+                    <div class="month-name">${month}</div>
+                    <div>${completed ? '✓' : '○'}</div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
           </div>
-          <div class="goal-target">${goal.target}</div>
-          <div class="month-tracker">
-            ${months.map((month, idx) => {
-              const key = `${goal.id}-${year}-${idx}`;
-              const completed = habitData[key] || false;
-              return `
-                <div class="month-box ${completed ? 'completed' : ''}" 
-                     onclick="toggleMonthlyGoal('${goal.id}', '${year}-${idx}')">
-                  <div class="month-name">${month}</div>
-                  <div>${completed ? '✓' : '○'}</div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function renderQuarterlyGoals() {
@@ -885,18 +1085,32 @@
         categoryDiv.className = 'category';
         
         let categoryScore = 0;
+        let categoryHabitCount = 0;
         habits.forEach(habit => {
-          const score = getCompletion(habit.id, habit.targetDays);
-          categoryScore += score;
-          totalScore += score;
-          totalHabits++;
+          if (!habit.optional && !habit.type) {
+            const score = getCompletion(habit.id, habit.targetDays, habit.goalCount);
+            categoryScore += score;
+            categoryHabitCount++;
+            totalScore += score;
+            totalHabits++;
+          }
         });
-        categoryScore = Math.round(categoryScore / habits.length);
+        categoryScore = categoryHabitCount > 0 ? Math.round(categoryScore / categoryHabitCount) : 0;
         
         const scoreClass = categoryScore >= 75 ? 'score-high' : categoryScore >= 50 ? 'score-med' : 'score-low';
         
         const habitRows = habits.map(habit => {
-          const percent = getCompletion(habit.id, habit.targetDays);
+          const percent = habit.optional || habit.type ? '-' : getCompletion(habit.id, habit.targetDays, habit.goalCount) + '%';
+          
+          // Count completed days for this habit
+          let completedCount = 0;
+          dates.forEach((date) => {
+            const dateStr = formatDate(date);
+            if (habitData[`${habit.id}-${dateStr}`]) {
+              completedCount++;
+            }
+          });
+          
           const dayCells = dates.map((date, index) => {
             const dateStr = formatDate(date);
             const isApplicable = !habit.targetDays || habit.targetDays.includes(index);
@@ -915,15 +1129,45 @@
               return '<div class="day-cell">-</div>';
             }
             
+            // Optional habits (golf) - always show as dashed circles
+            if (habit.optional) {
+              if (isChecked) weekTotal++;
+              return `<div class="day-cell"><div class="checkbox optional ${isChecked ? 'checked' : ''}" onclick="toggleHabit('${habit.id}', '${dateStr}')"></div></div>`;
+            }
+            
+            // Not an applicable day for this habit
             if (!isApplicable) {
-              return '<div class="day-cell"><div class="checkbox inactive"></div></div>';
+              return '<div class="day-cell"><div class="checkbox not-applicable"></div></div>';
             }
             
             if (isChecked) weekTotal++;
             
-            const missedClass = isPast && !isChecked && isApplicable ? 'missed' : '';
+            // Determine checkbox style based on goal progress
+            let checkboxClass = '';
+            if (isChecked) {
+              // For inverse goals (like no-beers), red when checked on applicable days, green after goal met
+              if (habit.inverse) {
+                if (habit.goalCount && completedCount <= habit.goalCount) {
+                  checkboxClass = 'missed'; // Red for failures on weekdays
+                } else {
+                  checkboxClass = 'goal-met'; // Green after failing enough times (shouldn't happen ideally)
+                }
+              } else {
+                // Normal goals - green when at/under goal, blue for extra credit
+                if (habit.goalCount && completedCount > habit.goalCount) {
+                  checkboxClass = 'extra-credit'; // Blue for going above and beyond
+                } else {
+                  checkboxClass = 'goal-met'; // Green for meeting goal
+                }
+              }
+            } else {
+              // Not checked
+              if (isPast) {
+                checkboxClass = 'missed'; // Missed opportunity
+              }
+            }
             
-            return `<div class="day-cell"><div class="checkbox ${isChecked ? 'checked' : ''} ${missedClass}" onclick="toggleHabit('${habit.id}', '${dateStr}')"></div></div>`;
+            return `<div class="day-cell"><div class="checkbox ${checkboxClass}" onclick="toggleHabit('${habit.id}', '${dateStr}')"></div></div>`;
           }).join('');
           
           return `
@@ -932,7 +1176,7 @@
                 <div class="habit-name">${habit.name}</div>
                 <div class="habit-target">${habit.target}</div>
               </div>
-              <div class="habit-percent">${percent}%</div>
+              <div class="habit-percent">${percent}</div>
               ${dayCells}
             </div>
           `;
@@ -951,7 +1195,7 @@
         container.appendChild(categoryDiv);
       });
       
-      document.getElementById('total-score').textContent = Math.round(totalScore / totalHabits) + '%';
+      document.getElementById('total-score').textContent = totalHabits > 0 ? Math.round(totalScore / totalHabits) + '%' : '0%';
       document.getElementById('week-total').textContent = weekTotal;
     }
   </script>
